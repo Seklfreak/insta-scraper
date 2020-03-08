@@ -37,6 +37,10 @@ func crawlPost(post *PostNode) {
 	default:
 		log.Warn("unknown post type")
 	}
+
+	for _, taggedUser := range post.EdgeMediaToTaggedUser.Edges {
+		crawlUser(&taggedUser.Node.User)
+	}
 }
 
 type PostNode struct {
@@ -48,8 +52,15 @@ type PostNode struct {
 			Node PostNode `json:"node"`
 		} `json:"edges"`
 	} `json:"edge_sidecar_to_children"`
-	DisplayResources displayResources `json:"display_resources"`
-	VideoURL         string           `json:"video_url"`
+	DisplayResources      displayResources `json:"display_resources"`
+	VideoURL              string           `json:"video_url"`
+	EdgeMediaToTaggedUser struct {
+		Edges []struct {
+			Node struct {
+				User UserNode `json:"user"`
+			} `json:"node"`
+		} `json:"edges"`
+	} `json:"edge_media_to_tagged_user"`
 }
 
 func crawlDisplayResources(resources displayResources) {
