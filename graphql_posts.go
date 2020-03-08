@@ -41,11 +41,7 @@ func crawlProfilePostsGraphQL(sourceURL *url.URL, data []byte) {
 
 		graphQLPosts := `https://www.instagram.com/graphql/query/?query_hash=e769aa130647d2354c40ea6a439bfc08&variables=%s`
 
-		err = c.Visit(fmt.Sprintf(graphQLPosts, url.QueryEscape(string(paramsText))))
-		if err != nil {
-			log.Error("failure visiting profile pic", zap.Error(err))
-			return
-		}
+		visit(fmt.Sprintf(graphQLPosts, url.QueryEscape(string(paramsText))))
 	}
 }
 

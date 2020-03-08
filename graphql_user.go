@@ -18,18 +18,11 @@ func crawlUser(user *UserNode) {
 	log.Info("visted profile")
 
 	if user.ProfilePicURLHd == "" {
-		err := c.Visit(fmt.Sprintf("https://www.instagram.com/%s/", user.Username))
-		if err != nil {
-			log.Error("failure visiting profile page", zap.Error(err))
-		}
+		visit(fmt.Sprintf("https://www.instagram.com/%s/", user.Username))
 		return
 	}
 
-	err := c.Visit(user.ProfilePicURLHd)
-	if err != nil {
-		log.Error("failure visiting profile pic", zap.Error(err))
-		return
-	}
+	visit(user.ProfilePicURLHd)
 
 	if user.EdgeOwnerToTimelineMedia.PageInfo.HasNextPage {
 		params := profilePostsParams{
@@ -45,11 +38,7 @@ func crawlUser(user *UserNode) {
 
 		graphQLPosts := `https://www.instagram.com/graphql/query/?query_hash=e769aa130647d2354c40ea6a439bfc08&variables=%s`
 
-		err = c.Visit(fmt.Sprintf(graphQLPosts, url.QueryEscape(string(paramsText))))
-		if err != nil {
-			log.Error("failure visiting profile pic", zap.Error(err))
-			return
-		}
+		visit(fmt.Sprintf(graphQLPosts, url.QueryEscape(string(paramsText))))
 	}
 }
 

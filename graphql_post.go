@@ -18,15 +18,9 @@ func crawlPost(post *PostNode) {
 		crawlDisplayResources(post.DisplayResources)
 	case "GraphVideo":
 		if post.VideoURL != "" {
-			err := c.Visit(post.VideoURL)
-			if err != nil {
-				log.Error("failure visiting video url", zap.Error(err))
-			}
+			visit(post.VideoURL)
 		} else if post.Shortcode != "" {
-			err := c.Visit(fmt.Sprintf("https://www.instagram.com/p/%s/", post.Shortcode))
-			if err != nil {
-				log.Error("failure visiting video post", zap.Error(err))
-			}
+			visit(fmt.Sprintf("https://www.instagram.com/p/%s/", post.Shortcode))
 		} else {
 			log.Warn("post without video URL nor shortcode, do not know how to handle")
 		}
@@ -77,10 +71,7 @@ func crawlDisplayResources(resources displayResources) {
 		}
 	}
 
-	err := c.Visit(lastSrc)
-	if err != nil {
-		log.Error("failure visiting display resource", zap.Error(err))
-	}
+	visit(lastSrc)
 }
 
 type displayResources []struct {

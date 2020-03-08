@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gocolly/colly"
+	"github.com/kelseyhightower/envconfig"
 	"go.uber.org/zap"
 )
 
@@ -13,7 +14,13 @@ const (
 	dir   = "./result/"
 )
 
+type config struct {
+	DownloadMedia bool `envconfig:"DOWNLOAD_MEDIA"`
+}
+
 var (
+	cfg config
+
 	log *zap.Logger
 	c   *colly.Collector
 )
@@ -23,6 +30,11 @@ func main() {
 	log, err = zap.NewDevelopment()
 	if err != nil {
 		panic(err)
+	}
+
+	err = envconfig.Process("", &cfg)
+	if err != nil {
+		log.Fatal("failure parsing config", zap.Error(err))
 	}
 
 	c = colly.NewCollector()
@@ -58,8 +70,5 @@ func main() {
 		}
 	})
 
-	err = c.Visit(start)
-	if err != nil {
-		log.Error("crawler failed", zap.Error(err))
-	}
+	visit(start)
 }
